@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jmsadair/raft/internal/numeric"
-	"github.com/jmsadair/raft/internal/random"
-	"github.com/jmsadair/raft/logging"
+	"github.com/dgate-io/raft/internal/numeric"
+	"github.com/dgate-io/raft/internal/random"
+	"github.com/dgate-io/raft/logging"
 	"github.com/stretchr/testify/require"
 )
 
@@ -50,11 +50,14 @@ func makeOperations(numOperations int) [][]byte {
 }
 
 func makeClusterConfiguration(numServers int) Configuration {
+	if numServers < 1 || numServers > 5 {
+		panic("invalid number of servers; must be between 1 and 5")
+	}
 	members := make(map[string]string, numServers)
 	isVoter := make(map[string]bool, numServers)
-	for i := 0; i < numServers; i++ {
+	for i := 1; i < numServers; i++ {
 		id := fmt.Sprint(i)
-		address := fmt.Sprintf("127.0.0.%d:8080", i)
+		address := fmt.Sprintf("127.0.0.1:%d8080", i)
 		members[id] = address
 		isVoter[id] = true
 	}

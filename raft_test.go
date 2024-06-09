@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jmsadair/raft/logging"
+	"github.com/dgate-io/raft/logging"
 	"github.com/stretchr/testify/require"
 )
 

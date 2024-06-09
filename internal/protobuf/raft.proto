@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/jmsadair/raft/internal/protobuf";
+option go_package = "github.com/dgate-io/raft/internal/protobuf";
 
 message LogEntry {
     uint64 index  = 1;

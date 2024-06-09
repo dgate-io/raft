@@ -10,7 +10,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/jmsadair/raft/internal/fileutil"
+	"github.com/dgate-io/raft/internal/fileutil"
 )
 
 const (

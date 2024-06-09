@@ -10,8 +10,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/jmsadair/raft/internal/fileutil"
-	pb "github.com/jmsadair/raft/internal/protobuf"
+	"github.com/dgate-io/raft/internal/fileutil"
+	pb "github.com/dgate-io/raft/internal/protobuf"
 	"google.golang.org/protobuf/proto"
 )
 
