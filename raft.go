@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jmsadair/raft/internal/numeric"
-	"github.com/jmsadair/raft/internal/random"
-	"github.com/jmsadair/raft/logging"
+	"github.com/dgate-io/raft/internal/numeric"
+	"github.com/dgate-io/raft/internal/random"
+	"github.com/dgate-io/raft/logging"
 )
 
 var (

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jmsadair/raft/logging"
+	"github.com/dgate-io/raft/logging"
 )
 
 const (

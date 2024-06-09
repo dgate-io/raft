@@ -3,10 +3,10 @@
 </p>
 
 
-![build](https://github.com/jmsadair/raft/actions/workflows/build.yml/badge.svg)
-[![Go Reference](https://pkg.go.dev/badge/github.com/jmsadair/raft)](https://pkg.go.dev/github.com/jmsadair/raft)
-![GitHub](https://img.shields.io/github/license/jmsadair/raft)
-![GitHub go.mod Go version (subdirectory of monorepo)](https://img.shields.io/github/go-mod/go-version/jmsadair/raft)
+![build](https://github.com/dgate-io/raft/actions/workflows/build.yml/badge.svg)
+[![Go Reference](https://pkg.go.dev/badge/github.com/dgate-io/raft)](https://pkg.go.dev/github.com/dgate-io/raft)
+![GitHub](https://img.shields.io/github/license/dgate-io/raft)
+![GitHub go.mod Go version (subdirectory of monorepo)](https://img.shields.io/github/go-mod/go-version/dgate-io/raft)
 
 # Raft
 
@@ -33,11 +33,11 @@ You can download and install Go from the official [Go website](https://golang.or
 Then, install the raft package by running
 
 ```shell
-go get -u github.com/jmsadair/raft
+go get -u github.com/dgate-io/raft
 ```
 
-Once you have the package installed, you may refer to the [raft package reference page](https://pkg.go.dev/github.com/jmsadair/raft) for basic usage.
-An example of how to use raft as well as a set of [Jepsen](https://github.com/jepsen-io/jepsen) tests can be found [here](https://github.com/jmsadair/raft-example).
+Once you have the package installed, you may refer to the [raft package reference page](https://pkg.go.dev/github.com/dgate-io/raft) for basic usage.
+An example of how to use raft as well as a set of [Jepsen](https://github.com/jepsen-io/jepsen) tests can be found [here](https://github.com/dgate-io/raft-example).
 
 # Contributing
 

@@ -1,6 +1,6 @@
 package raft
 
-import pb "github.com/jmsadair/raft/internal/protobuf"
+import pb "github.com/dgate-io/raft/internal/protobuf"
 
 // AppendEntriesRequest is a request invoked by the leader to replicate log entries and also serves as a heartbeat.
 type AppendEntriesRequest struct {

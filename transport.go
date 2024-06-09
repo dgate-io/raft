@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	pb "github.com/jmsadair/raft/internal/protobuf"
+	pb "github.com/dgate-io/raft/internal/protobuf"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"

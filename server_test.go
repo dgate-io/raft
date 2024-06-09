@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jmsadair/raft/internal/random"
+	"github.com/dgate-io/raft/internal/random"
 	"go.uber.org/goleak"
 )
 

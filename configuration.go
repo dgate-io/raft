@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	pb "github.com/jmsadair/raft/internal/protobuf"
+	pb "github.com/dgate-io/raft/internal/protobuf"
 	"google.golang.org/protobuf/proto"
 )
 

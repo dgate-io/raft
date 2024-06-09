@@ -3,7 +3,7 @@ package raft
 import (
 	"testing"
 
-	pb "github.com/jmsadair/raft/internal/protobuf"
+	pb "github.com/dgate-io/raft/internal/protobuf"
 	"github.com/stretchr/testify/require"
 )
 

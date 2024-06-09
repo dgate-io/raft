@@ -1,4 +1,4 @@
-module github.com/jmsadair/raft
+module github.com/dgate-io/raft
 
 go 1.20
 
