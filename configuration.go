@@ -10,6 +10,9 @@ import (
 
 // Configuration represents a cluster of nodes.
 type Configuration struct {
+	// The ID of the leader of the cluster.
+	LeaderId string
+
 	// All members of the cluster. Maps node ID to address.
 	Members map[string]string
 
@@ -43,9 +46,10 @@ func NewConfiguration(index uint64, members map[string]string) *Configuration {
 // Clone creates a deep-copy of the configuration.
 func (c *Configuration) Clone() Configuration {
 	configuration := Configuration{
-		Index:   c.Index,
-		IsVoter: make(map[string]bool, len(c.Members)),
-		Members: make(map[string]string, len(c.Members)),
+		LeaderId: c.LeaderId,
+		Index:    c.Index,
+		IsVoter:  make(map[string]bool, len(c.Members)),
+		Members:  make(map[string]string, len(c.Members)),
 	}
 
 	for id := range c.Members {
@@ -60,12 +64,17 @@ func (c *Configuration) Clone() Configuration {
 func (c *Configuration) String() string {
 	var builder strings.Builder
 
-	builder.WriteString(fmt.Sprintf("logIndex: %d members: ", c.Index))
+	builder.WriteString(fmt.Sprintf("leaderId:%s logIndex:%d, members:", c.LeaderId, c.Index))
+	index := 0
 	for nodeID, address := range c.Members {
 		if c.IsVoter[nodeID] {
-			builder.WriteString(fmt.Sprintf("(%s, %s, voter),", nodeID, address))
+			builder.WriteString(fmt.Sprintf("(%s, %s, voter)", nodeID, address))
 		} else {
-			builder.WriteString(fmt.Sprintf("(%s, %s, non-voter),", nodeID, address))
+			builder.WriteString(fmt.Sprintf("(%s, %s, non-voter)", nodeID, address))
+		}
+		index++
+		if index < len(c.Members) {
+			builder.WriteString(",")
 		}
 	}
 
@@ -74,9 +83,10 @@ func (c *Configuration) String() string {
 
 func encodeConfiguration(configuration *Configuration) ([]byte, error) {
 	pbConfiguration := &pb.Configuration{
-		Members: configuration.Members,
-		IsVoter: configuration.IsVoter,
-		Index:   configuration.Index,
+		LeaderId: configuration.LeaderId,
+		Members:  configuration.Members,
+		IsVoter:  configuration.IsVoter,
+		Index:    configuration.Index,
 	}
 	data, err := proto.Marshal(pbConfiguration)
 	if err != nil {

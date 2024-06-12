@@ -2049,6 +2049,7 @@ func (r *Raft) decodeConfiguration(data []byte) Configuration {
 // appendConfiguration sets the log index associated with the
 // configuration and appends it to the log.
 func (r *Raft) appendConfiguration(configuration *Configuration) {
+	configuration.LeaderId = r.id
 	configuration.Index = r.log.NextIndex()
 	data := r.encodeConfiguration(configuration)
 	entry := NewLogEntry(configuration.Index, r.currentTerm, data, ConfigurationEntry)
