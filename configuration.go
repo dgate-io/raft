@@ -43,9 +43,9 @@ func NewConfiguration(index uint64, members map[string]string) *Configuration {
 // Clone creates a deep-copy of the configuration.
 func (c *Configuration) Clone() Configuration {
 	configuration := Configuration{
-		Index:    c.Index,
-		IsVoter:  make(map[string]bool, len(c.Members)),
-		Members:  make(map[string]string, len(c.Members)),
+		Index:   c.Index,
+		IsVoter: make(map[string]bool, len(c.Members)),
+		Members: make(map[string]string, len(c.Members)),
 	}
 
 	for id := range c.Members {
@@ -79,9 +79,9 @@ func (c *Configuration) String() string {
 
 func encodeConfiguration(configuration *Configuration) ([]byte, error) {
 	pbConfiguration := &pb.Configuration{
-		Members:  configuration.Members,
-		IsVoter:  configuration.IsVoter,
-		Index:    configuration.Index,
+		Members: configuration.Members,
+		IsVoter: configuration.IsVoter,
+		Index:   configuration.Index,
 	}
 	data, err := proto.Marshal(pbConfiguration)
 	if err != nil {
