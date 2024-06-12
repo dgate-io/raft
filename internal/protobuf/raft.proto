@@ -64,9 +64,9 @@ message StorageState {
 }
 
 message Configuration {
-    map<string, string> members   = 1;
-    map<string, bool>   is_voter  = 2;
-    uint64              index     = 3;
+    map<string, string> members  = 1;
+    map<string, bool>   is_voter = 2;
+    uint64              index    = 3;
 }
 
 service Raft {
