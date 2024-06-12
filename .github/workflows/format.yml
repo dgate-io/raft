@@ -10,8 +10,8 @@ jobs:
     steps:
       - name: Set Git Config
         run: |
-          git config --global user.name 'James Adair'
-          git config --global user.email 'jmsadair@gmail.com'
+          git config --global user.name 'DGate-Bot'
+          git config --global user.email 'bot@dgate.io'
 
       - name: Install clang-format
         run: sudo apt install -y clang-format

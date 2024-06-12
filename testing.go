@@ -55,7 +55,7 @@ func makeClusterConfiguration(numServers int) Configuration {
 	}
 	members := make(map[string]string, numServers)
 	isVoter := make(map[string]bool, numServers)
-	for i := 1; i < numServers; i++ {
+	for i := 1; i <= numServers; i++ {
 		id := fmt.Sprint(i)
 		address := fmt.Sprintf("127.0.0.1:%d8080", i)
 		members[id] = address

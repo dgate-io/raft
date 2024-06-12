@@ -539,6 +539,13 @@ func (r *Raft) Status() Status {
 	}
 }
 
+// LeaderID returns the ID of the leader of the cluster.
+func (r *Raft) LeaderID() string {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return r.leaderID
+}
+
 // Configuration returns the most current configuration of this node.
 // This configuration may or may not have been committed yet. If there
 // is no configuration, an empty configuration is returned.
@@ -2049,7 +2056,6 @@ func (r *Raft) decodeConfiguration(data []byte) Configuration {
 // appendConfiguration sets the log index associated with the
 // configuration and appends it to the log.
 func (r *Raft) appendConfiguration(configuration *Configuration) {
-	configuration.LeaderId = r.id
 	configuration.Index = r.log.NextIndex()
 	data := r.encodeConfiguration(configuration)
 	entry := NewLogEntry(configuration.Index, r.currentTerm, data, ConfigurationEntry)
