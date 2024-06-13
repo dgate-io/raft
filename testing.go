@@ -347,6 +347,7 @@ func (tc *testCluster) startCluster() {
 	tc.mu.RLock()
 	defer tc.mu.RUnlock()
 
+	var lastNode *Raft
 	for _, node := range tc.nodes {
 		// Bootstrap is normally just called on a single member but here
 		// we bootstrap all initial members of the cluster here to ensure that
@@ -358,7 +359,10 @@ func (tc *testCluster) startCluster() {
 		if err := node.Start(); err != nil {
 			tc.t.Fatalf("failed to start node: error = %v", err)
 		}
+		lastNode = node
 	}
+
+	lastNode.WaitForStableState()
 }
 
 func (tc *testCluster) stopCluster() {

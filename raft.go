@@ -292,6 +292,7 @@ func NewRaft(
 		operationManager: newOperationManager(options.leaseDuration),
 		state:            Shutdown,
 		fsm:              fsm,
+		stateCallback:    func(leaderId string, state State) {},
 	}
 
 	raft.applyCond = sync.NewCond(&raft.mu)
@@ -556,6 +557,11 @@ func (r *Raft) LeaderID() string {
 func (r *Raft) WaitForStableState() {
 	r.mu.Lock()
 	for r.leaderID == "" {
+		if r.state == Leader {
+			r.leaderID = r.id
+			r.mu.Unlock()
+			return
+		}
 		r.electionCond.Wait()
 	}
 	r.mu.Unlock()
