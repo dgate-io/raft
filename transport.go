@@ -50,7 +50,7 @@ type Transport interface {
 
 	// RegisterInstallSnapshotHandler registers the function that will called when an
 	// InstallSnapshot RPC is received.
-	RegsiterInstallSnapshotHandler(
+	RegisterInstallSnapshotHandler(
 		handler func(*InstallSnapshotRequest, *InstallSnapshotResponse) error,
 	)
 
@@ -300,7 +300,7 @@ func (t *transport) RegisterRequestVoteHandler(
 	t.requestVoteHandler = handler
 }
 
-func (t *transport) RegsiterInstallSnapshotHandler(
+func (t *transport) RegisterInstallSnapshotHandler(
 	handler func(*InstallSnapshotRequest, *InstallSnapshotResponse) error,
 ) {
 	t.installSnapshotHandler = handler

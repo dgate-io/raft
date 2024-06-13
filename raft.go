@@ -211,6 +211,8 @@ type Raft struct {
 
 	wg sync.WaitGroup
 
+	stateCallback func(leaderId string, state State)
+
 	mu sync.Mutex
 }
 
@@ -303,6 +305,10 @@ func NewRaft(
 	}
 
 	return raft, nil
+}
+
+func (r *Raft) SetStateCallback(callback func(leaderId string, state State)) {
+	r.stateCallback = callback
 }
 
 // restore will recover any persisted state and initialize the node with it.
@@ -454,7 +460,7 @@ func (r *Raft) start(restore bool) error {
 	// Register the functions for handling RPCs.
 	r.transport.RegisterAppendEntriesHandler(r.AppendEntries)
 	r.transport.RegisterRequestVoteHandler(r.RequestVote)
-	r.transport.RegsiterInstallSnapshotHandler(r.InstallSnapshot)
+	r.transport.RegisterInstallSnapshotHandler(r.InstallSnapshot)
 
 	// Initialize the follower state.
 	r.followers = make(map[string]*follower)
@@ -544,6 +550,15 @@ func (r *Raft) LeaderID() string {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	return r.leaderID
+}
+
+// WaitForStableState blocks until this node is in a stable state.
+func (r *Raft) WaitForStableState() {
+	r.mu.Lock()
+	for r.leaderID == "" {
+		r.electionCond.Wait()
+	}
+	r.mu.Unlock()
 }
 
 // Configuration returns the most current configuration of this node.
@@ -1887,6 +1902,7 @@ func (r *Raft) becomePreCandidate() {
 
 // becomeLeader transitions this node to the leader state.
 func (r *Raft) becomeLeader() {
+	defer r.stateCallback(r.leaderID, r.state)
 	r.state = Leader
 	r.operationManager = newOperationManager(r.options.leaseDuration)
 	for _, follower := range r.followers {
@@ -1907,6 +1923,7 @@ func (r *Raft) becomeLeader() {
 
 // becomeFollower transitions this node to the follower state.
 func (r *Raft) becomeFollower(leaderID string, term uint64) {
+	defer r.stateCallback(leaderID, r.state)
 	r.state = Follower
 	r.currentTerm = term
 	r.leaderID = leaderID
