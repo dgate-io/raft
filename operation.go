@@ -21,6 +21,10 @@ const (
 	// to the log and requires that the server verify its leadership via its lease.
 	// This operation type does not guarantee linearizable semantics.
 	LeaseBasedReadOnly
+
+	// Broadcasted indicates that the provided operation will be written to the log and
+	// broadcasted to all followers and guarantees linearizable semantics.
+	Broadcasted
 )
 
 // String converts an OperationType to a string.
@@ -28,6 +32,8 @@ func (o OperationType) String() string {
 	switch o {
 	case Replicated:
 		return "replicated"
+	case Broadcasted:
+		return "broadcasted"
 	case LinearizableReadOnly:
 		return "linearizableReadOnly"
 	case LeaseBasedReadOnly:

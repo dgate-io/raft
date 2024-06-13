@@ -190,6 +190,93 @@ func TestNewMembersCanLead(t *testing.T) {
 
 // TestSingleServerSubmit checks whether a cluster consisting of
 // a single server can commit a single operation.
+func TestSingleServerBroadcastedSubmit(t *testing.T) {
+	cluster := newCluster(t, 1, snapshotting, snapshotSize, 0)
+
+	cluster.startCluster()
+	defer cluster.stopCluster()
+
+	cluster.checkLeaders(false)
+	operations := makeOperations(1)
+	cluster.submit(false, Broadcasted, operations...)
+
+	cluster.checkStateMachines(1, operations)
+}
+
+// TestSubmit checks whether the cluster can successfully
+// commit a single operation when there are no failures.
+func TestBroadcastedSubmit(t *testing.T) {
+	cluster := newCluster(t, 3, snapshotting, snapshotSize, 0)
+
+	cluster.startCluster()
+	defer cluster.stopCluster()
+
+	cluster.checkLeaders(false)
+	operations := makeOperations(1)
+	cluster.submit(false, Broadcasted, operations...)
+
+	cluster.checkStateMachines(3, operations)
+}
+
+// TestMultipleSubmit checks whether a cluster can successfully
+// commit multiple operations when there are no failures.
+func TestMultipleBroadcastedSubmit(t *testing.T) {
+	cluster := newCluster(t, 5, snapshotting, snapshotSize, 0)
+
+	cluster.startCluster()
+	defer cluster.stopCluster()
+
+	cluster.checkLeaders(false)
+	operations := makeOperations(1000)
+	cluster.submit(false, Broadcasted, operations...)
+
+	cluster.checkStateMachines(5, operations)
+}
+
+// TestConcurrentSubmit test whether operations are correctly
+// applied when there are multiple clients submitting operations
+// at the same time.
+func TestConcurrentBroadcastedSubmit(t *testing.T) {
+	cluster := newCluster(t, 5, snapshotting, snapshotSize, 0)
+
+	cluster.startCluster()
+	defer cluster.stopCluster()
+
+	cluster.checkLeaders(false)
+	operations := makeOperations(200)
+
+	var wg sync.WaitGroup
+
+	// Simulates a client submitting operations.
+	client := func(operations [][]byte, readyCh chan interface{}) {
+		defer wg.Done()
+		<-readyCh
+		cluster.submit(false, Broadcasted, operations...)
+	}
+
+	// The number of clients submitting operations concurrently.
+	numClients := 10
+
+	// The number of command each client will submit.
+	operationsPerClient := len(operations) / numClients
+
+	// Signals to the clients that they can start submitting operations.
+	readyCh := make(chan interface{})
+
+	// Spin up the clients with their respective operations.
+	for i := 0; i < numClients; i++ {
+		clientOperations := operations[i*operationsPerClient : (i+1)*operationsPerClient]
+		wg.Add(1)
+		go client(clientOperations, readyCh)
+	}
+
+	// Allow clients to start and wait until they are done.
+	close(readyCh)
+	wg.Wait()
+
+	cluster.checkStateMachines(5, operations)
+}
+
 func TestSingleServerSubmit(t *testing.T) {
 	cluster := newCluster(t, 1, snapshotting, snapshotSize, 0)
 

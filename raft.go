@@ -723,8 +723,8 @@ func (r *Raft) SubmitOperation(
 	timeout time.Duration,
 ) Future[OperationResponse] {
 	switch operationType {
-	case Replicated:
-		return r.submitReplicatedOperation(operation, timeout)
+	case Replicated, Broadcasted:
+		return r.submitReplicatedOperation(operation, operationType, timeout)
 	case LeaseBasedReadOnly, LinearizableReadOnly:
 		return r.submitReadOnlyOperation(operation, operationType, timeout)
 	default:
@@ -741,6 +741,7 @@ func (r *Raft) SubmitOperation(
 // submitReplicatedOperation submits a replicated operation to be applied to the state machine.
 func (r *Raft) submitReplicatedOperation(
 	operationBytes []byte,
+	operationType OperationType,
 	timeout time.Duration,
 ) Future[OperationResponse] {
 	r.mu.Lock()
@@ -752,21 +753,27 @@ func (r *Raft) submitReplicatedOperation(
 		respond(operationFuture.responseCh, OperationResponse{}, ErrNotLeader)
 		return operationFuture
 	}
-
-	entry := NewLogEntry(r.log.NextIndex(), r.currentTerm, operationBytes, OperationEntry)
-	if err := r.log.AppendEntry(entry); err != nil {
-		r.logger.Fatalf("failed to append entry to log: error = %v", err)
+	index := r.log.NextIndex()
+	term := r.currentTerm
+	if operationType == Replicated {
+		entry := NewLogEntry(
+			index, term,
+			operationBytes,
+			OperationEntry,
+		)
+		index = entry.Index
+		if err := r.log.AppendEntry(entry); err != nil {
+			r.logger.Fatalf("failed to append entry to log: error = %v", err)
+		}
 	}
 
-	r.operationManager.pendingReplicated[entry.Index] = operationFuture.responseCh
+	r.operationManager.pendingReplicated[index] = operationFuture.responseCh
 
 	r.sendAppendEntriesToPeers()
 
 	r.logger.Debugf(
 		"operation submitted: logIndex = %d, logTerm = %d, type = %s",
-		entry.Index,
-		entry.Term,
-		Replicated.String(),
+		index, term, Replicated.String(),
 	)
 
 	return operationFuture
