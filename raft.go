@@ -292,7 +292,6 @@ func NewRaft(
 		operationManager: newOperationManager(options.leaseDuration),
 		state:            Shutdown,
 		fsm:              fsm,
-		stateCallback:    func(leaderId string, state State) {},
 	}
 
 	raft.applyCond = sync.NewCond(&raft.mu)
@@ -556,15 +555,14 @@ func (r *Raft) LeaderID() string {
 // WaitForStableState blocks until this node is in a stable state.
 func (r *Raft) WaitForStableState() {
 	r.mu.Lock()
+	defer r.mu.Unlock()
 	for r.leaderID == "" {
+		r.applyCond.Wait()
 		if r.state == Leader {
 			r.leaderID = r.id
-			r.mu.Unlock()
 			return
 		}
-		r.electionCond.Wait()
 	}
-	r.mu.Unlock()
 }
 
 // Configuration returns the most current configuration of this node.
@@ -1908,7 +1906,9 @@ func (r *Raft) becomePreCandidate() {
 
 // becomeLeader transitions this node to the leader state.
 func (r *Raft) becomeLeader() {
-	defer r.stateCallback(r.leaderID, r.state)
+	if r.stateCallback != nil {
+		defer r.stateCallback(r.leaderID, r.state)
+	}
 	r.state = Leader
 	r.operationManager = newOperationManager(r.options.leaseDuration)
 	for _, follower := range r.followers {
@@ -1929,7 +1929,9 @@ func (r *Raft) becomeLeader() {
 
 // becomeFollower transitions this node to the follower state.
 func (r *Raft) becomeFollower(leaderID string, term uint64) {
-	defer r.stateCallback(leaderID, r.state)
+	if r.stateCallback != nil {
+		defer r.stateCallback(r.leaderID, r.state)
+	}
 	r.state = Follower
 	r.currentTerm = term
 	r.leaderID = leaderID
